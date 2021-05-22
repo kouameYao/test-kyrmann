@@ -1,15 +1,18 @@
 // To parse this JSON data, do
 
-class User {
-  User({
+class Marchandise {
+  Marchandise({
+    this.marchandiseId,
     this.marchandiseName,
     this.marchandiseQuantity,
   });
 
+  int marchandiseId;
   String marchandiseName;
   String marchandiseQuantity;
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory Marchandise.fromJson(Map<String, dynamic> json) => Marchandise(
+        marchandiseId: json["marchandiseid"],
         marchandiseName: json["marchandisename"],
         marchandiseQuantity: json["marchandisequantity"],
       );

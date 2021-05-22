@@ -4,8 +4,5 @@ import 'package:flutter/material.dart';
 const kPrimaryColor = Color(0xFF7b7b7b);
 const kGreyColor = Color(0xFFeeeeee);
 const kOrangeColor = Color(0xFFFFB300);
-
+const kWhiteColor = Color(0xFFFFFFFF);
 // App settings
-
-const String kAppName = "DRONE COMMANDER";
-const String kVersion = "1.0";

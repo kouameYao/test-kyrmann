@@ -1,153 +1,84 @@
-// import 'dart:convert';
+import 'dart:convert';
+import 'package:test_kyrmann/models/api_response.dart';
+import 'package:test_kyrmann/models/insert_marchandise.dart';
+import 'package:test_kyrmann/models/marchandise.dart';
+import 'package:http/http.dart' as http;
+import 'package:test_kyrmann/models/user.dart';
 
-// class ActivitesServices with ChangeNotifier {
-//   List<Activite> _activites = [];
+class API {
+  static const apiUrl = "http://192.168.1.102:9401/market";
+  static const headers = {
+    // 'apikey' : '165fd21a-63fc-4873-9079-b1ce4b283629',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
 
-//   List<Activite> get item {
-//     return [..._activites];
-//   }
+  logUserIn(User user) async {
+    var jsonResponse;
+    var response = await http.post(apiUrl + '/utilisateur/login',
+        body: json.encode(user.toJson()));
+    //Here we will check the response of api
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
 
-//   static const apiUrl = "https://agritab-fullstack.herokuapp.com/api";
+      print("Response body : ${response.body} ");
+      // }
+    }
 
-//   Future<APIResponses<List<Activite>>> getAllActivites(int phaseId) async {
-//     final SharedPreferences sharedPreferences =
-//         await SharedPreferences.getInstance();
-//     var token = sharedPreferences.getString('token');
+    return jsonResponse;
+    // return APIResponses<User>(
+    //     error: true, errorMessage: 'Quelque chose de mauvais s\est passé ');
+  }
 
-//     print(
-//         'Begin in getAllProjet------------------------------- Token : $token');
+  Future<APIResponses<List<Marchandise>>> getAllMarchandise() async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
 
-//     final headers = {
-//       'Authorization': 'Bearer ' + token,
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json'
-//     };
+    return await http
+        .get(apiUrl + '/marchandise/getall', headers: headers)
+        .then((response) {
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final marchandises = <Marchandise>[];
 
-//     return await http
-//         .get(apiUrl + '/phases/$phaseId/activites', headers: headers)
-//         .then((response) {
-//       if (response.statusCode == 200) {
-//         final jsonData = json.decode(response.body);
-//         final phases = <Activite>[];
+        for (var item in jsonData['data']) {
+          marchandises.add(Marchandise.fromJson(
+              item)); // Cette fonction Activite.fromJson est implémentté dans note_for_listing.dart
+        }
 
-//         for (var item in jsonData['data']) {
-//           phases.add(Activite.fromJson(
-//               item)); // Cette fonction Activite.fromJson est implémentté dans note_for_listing.dart
-//         }
+        print(
+            'End in get phases--------------------------------------------------');
+        return APIResponses<List<Marchandise>>(data: marchandises);
+      }
+      return APIResponses<List<Marchandise>>(
+          error: true,
+          errorMessage: 'Erreur, veillez contacté votre support technique ');
+    }).catchError((e) {
+      print(e.error);
+    });
+  }
 
-//         print(
-//             'End in get phases--------------------------------------------------');
-//         return APIResponses<List<Activite>>(data: phases);
-//       }
-//       return APIResponses<List<Activite>>(
-//           error: true,
-//           errorMessage: 'Erreur, veillez contacté votre support technique ');
-//     }).catchError((e) {
-//       print(e.error);
-//     });
-//   }
+  Future<APIResponses<bool>> createMarchandise(
+      MarchandiseManipulation item) async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
 
-//   Future<APIResponses<Activite>> getActivite(int activiteID) async {
-//     // Il faut passer l'id de l'activite en question dans la fonction getNote
-//     final SharedPreferences sharedPreferences =
-//         await SharedPreferences.getInstance();
-//     var token = sharedPreferences.getString('token');
+    print(json.encode(item.toJson()));
 
-//     print(
-//         'Begin in getAllProjet------------------------------- Token : $token');
-
-//     final headers = {
-//       'Authorization': 'Bearer ' + token,
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json'
-//     };
-
-//     return http
-//         .get(apiUrl + '/activites/$activiteID', headers: headers)
-//         .then((response) {
-//       if (response.statusCode == 200) {
-//         final jsonData = json.decode(response.body);
-//         return APIResponses<Activite>(
-//             data: Activite.fromJson(jsonData['data']));
-//       }
-//       return APIResponses<Activite>(
-//           error: true, errorMessage: 'Une erreur est survenue');
-//     }).catchError((_) => APIResponses<Activite>(
-//             error: true, errorMessage: 'Une erreur est survenue'));
-//   }
-
-// // // Ici, nous avons besoin d'un booléen pour nous dire si la creation de notre note a été avec success
-//   Future<APIResponses<bool>> createActivite(ActiviteManipulation item) async {
-//     final SharedPreferences sharedPreferences =
-//         await SharedPreferences.getInstance();
-//     var token = sharedPreferences.getString('token');
-
-//     print(
-//         'Begin in getAllProjet------------------------------- Token : $token');
-
-//     final headers = {
-//       'Authorization': 'Bearer ' + token,
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json'
-//     };
-
-//     print(json.encode(item.toJson()));
-
-//     return http
-//         .post(apiUrl + '/activites',
-//             headers: headers, body: json.encode(item.toJson()))
-//         .then((response) {
-//       if (response.statusCode == 200) {
-//         return APIResponses<bool>(data: true);
-//       }
-//       return APIResponses<bool>(
-//           error: true, errorMessage: 'Une erreur est survenue');
-//     }).catchError((_) => APIResponses<bool>(
-//             error: true, errorMessage: 'Une erreur est survenue'));
-//   }
-
-//   // Il est à noter que les memes éléments de la creation servent à la modification
-//   // Ici, il faut dire qu'en plus de la classe note, nous avons besoin de faire passer l'ID de la note en question en parametres
-//   Future<APIResponses<bool>> updateActivite(
-//       int activiteID, ActiviteManipulation activite) async {
-//     final SharedPreferences sharedPreferences =
-//         await SharedPreferences.getInstance();
-//     var token = sharedPreferences.getString('token');
-
-//     print(
-//         'Begin in getAllProjet------------------------------- Token : $token');
-
-//     final headers = {
-//       'Authorization': 'Bearer ' + token,
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json'
-//     };
-//     return http
-//         .put(apiUrl + '/activites/$activiteID',
-//             headers: headers, body: json.encode(activite.toJson()))
-//         .then((notes) {
-//       if (notes.statusCode == 200) {
-//         return APIResponses<bool>(data: true);
-//       }
-//       return APIResponses<bool>(
-//           error: true, errorMessage: 'Une erreur est survenue');
-//     }).catchError((_) => APIResponses<bool>(
-//             error: true, errorMessage: 'Une erreur est survenue'));
-//   }
-
-//   Future<APIResponses<bool>> deleteNote(String noteID) {
-//     return http
-//         .delete(
-//             'https://8f9cbdf8-7657-4678-ba75-0e68ff33665b.mock.pstmn.io/activite/' +
-//                 '/notes/' +
-//                 noteID)
-//         .then((notes) {
-//       if (notes.statusCode == 204) {
-//         return APIResponses<bool>(data: true);
-//       }
-//       return APIResponses<bool>(
-//           error: true, errorMessage: 'Une erreur est survenue');
-//     }).catchError((_) => APIResponses<bool>(
-//             error: true, errorMessage: 'Une erreur est survenue'));
-//   }
-// }
+    return http
+        .post(apiUrl + '/marchandise/add?marchandise=&file=',
+            body: json.encode(item.toJson()))
+        .then((response) {
+      if (response.statusCode == 200) {
+        return APIResponses<bool>(data: true);
+      }
+      return APIResponses<bool>(
+          error: true, errorMessage: 'Une erreur est survenue');
+    }).catchError((_) => APIResponses<bool>(
+            error: true, errorMessage: 'Une erreur est survenue'));
+  }
+}
