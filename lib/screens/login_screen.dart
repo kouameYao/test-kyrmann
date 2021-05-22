@@ -123,13 +123,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       CircularProgressIndicator(backgroundColor: Colors.green)
                     else
                       RaisedButton(
-                        // onPressed: _login,
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            return HomeScreen();
-                          }));
-                        },
+                        onPressed: _login,
+                        // onPressed: () {
+                        //   Navigator.of(context)
+                        //       .push(MaterialPageRoute(builder: (context) {
+                        //     return HomeScreen();
+                        //   }));
+                        // },
                         child: Text('Connexion'),
                       ),
                   ],
