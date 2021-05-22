@@ -19,9 +19,9 @@ class API {
         body: json.encode(user.toJson()));
     //Here we will check the response of api
     if (response.statusCode == 200) {
+      print("Response body : ${response.body} ");
       jsonResponse = json.decode(response.body);
 
-      print("Response body : ${response.body} ");
       // }
     }
 

@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = 'Mon-Store';
+    final title = 'Mon~Store';
     return MaterialApp(
       title: title,
       debugShowCheckedModeBanner: false,
@@ -71,8 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
         // drawer: DrawerUiApp(),
         body: ListView.builder(
           itemCount: _apiResponses == null ? 0 : _apiResponses.data.length,
-          itemBuilder: (context, i) {
-            return MarchandiseItem();
+          itemBuilder: (context, index) {
+            return MarchandiseItem(
+              name: _apiResponses.data[index].marchandiseName,
+              quantite: _apiResponses.data[index].marchandiseQuantity,
+            );
           },
         ),
         floatingActionButton: FloatingActionButton(

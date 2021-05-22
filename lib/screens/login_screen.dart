@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Mon-Store",
+                        "Mon~Store",
                         style: TextStyle(
                             fontSize: 30,
                             color: Colors.black,
